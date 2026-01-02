@@ -1,0 +1,76 @@
+<!-- 
+    單一細項 (Edit/Create Mode)
+    這是一個 table row (tr)，包含了 input 欄位
+-->
+<!-- [修正] 變數名稱統一使用 quoteitem -->
+<tr id="item-{{ quoteitem.id if quoteitem.id else 'new-row' }}" class="bg-light border-start border-4 border-primary align-top">
+    
+    <!-- 隱藏欄位：Quote ID -->
+    <!-- 
+        如果是新增模式，需要帶入 quote_id (從 query params 抓取)
+        如果是編輯模式，後端物件已有 quote_id
+    -->
+    <input type="hidden" name="quote_id" 
+           value="{{ request.query_params.get('quote_id', '') or quoteitem.quote_id }}">
+
+    <!-- 1. 品項名稱與描述 -->
+    <td class="ps-3 pt-3">
+        <div class="d-flex flex-column gap-2">
+            <input type="text" name="name" class="form-control form-control-sm fw-bold" 
+                   placeholder="品項名稱" required
+                   value="{{ quoteitem.name or '' }}">
+            <textarea name="description" class="form-control form-control-sm" rows="1" 
+                      placeholder="描述 (選填)">{{ quoteitem.description or '' }}</textarea>
+        </div>
+    </td>
+
+    <!-- 2. 單價 -->
+    <td class="pt-3">
+        <input type="number" step="0.01" name="unit_price" class="form-control form-control-sm text-end" 
+               placeholder="0.00" required
+               value="{{ quoteitem.unit_price or 0 }}">
+    </td>
+
+    <!-- 3. 數量 -->
+    <td class="pt-3">
+        <input type="number" step="0.01" name="quantity" class="form-control form-control-sm text-end" 
+               placeholder="1" required
+               value="{{ quoteitem.quantity or 1 }}">
+    </td>
+
+    <!-- 4. 小計 (編輯時顯示 icon 或 --) -->
+    <td class="text-end pt-3 pe-3 text-muted align-middle">
+        <small><i class="fas fa-calculator"></i></small>
+    </td>
+
+    <!-- 5. 操作按鈕 -->
+    <td class="text-end pt-3 pe-2 align-middle">
+        <div class="d-flex gap-1 justify-content-end">
+            <!-- [修正] 路徑改為 /ui/quoteitems，變數改為 quoteitem -->
+            <!-- 儲存 -->
+            <button type="button" class="btn btn-sm btn-success shadow-sm"
+                    {% if quoteitem.id %}
+                        hx-put="/ui/quoteitems/{{ quoteitem.id }}" 
+                    {% else %}
+                        hx-post="/ui/quoteitems" 
+                    {% endif %}
+                    hx-include="closest tr"
+                    hx-target="closest tr"
+                    hx-swap="outerHTML">
+                <i class="fas fa-check"></i>
+            </button>
+            
+            <!-- 取消 -->
+            <button type="button" class="btn btn-sm btn-secondary shadow-sm"
+                    {% if quoteitem.id %}
+                        hx-get="/ui/quoteitems/{{ quoteitem.id }}?cancelled=true"
+                        hx-target="closest tr"
+                        hx-swap="outerHTML"
+                    {% else %}
+                        onclick="this.closest('tr').remove()"
+                    {% endif %}>
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </td>
+</tr>

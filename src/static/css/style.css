@@ -1,0 +1,119 @@
+/* Google + Teamleader Style (Top Nav Version) */
+:root {
+    --bg-dark: #1e1e1e;       /* 深灰底色 (導航欄) */
+    --bg-card: #ffffff;       /* 卡片白底 */
+    --bg-body: #f8f9fa;       /* 整體灰白背景 */
+    --text-primary: #202124;  /* 主要文字 */
+    --text-secondary: #5f6368;/* 次要文字 */
+    --accent-yellow: #f4d03f; /* 品牌黃 */
+    --accent-hover: #e0c036;  /* 品牌黃 (Hover) */
+    --nav-height: 64px;       /* 導航欄高度 */
+}
+
+body {
+    background-color: var(--bg-body);
+    font-family: 'Noto Sans TC', sans-serif; /* 記得在 Base Template 引入 Google Fonts */
+    color: var(--text-primary);
+    padding-top: var(--nav-height); /* 預留空間給 Fixed Navbar */
+}
+
+/* --- 頂部導航欄 (Top Navbar) --- */
+.navbar-custom {
+    background-color: var(--bg-dark);
+    height: var(--nav-height);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15); /* 讓導航欄浮起來的陰影 */
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--accent-yellow) !important;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-link {
+    color: #e0e0e0 !important;
+    font-weight: 500;
+    padding: 8px 16px !important;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin: 0 4px;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+    color: var(--bg-dark) !important;
+    background-color: var(--accent-yellow);
+    font-weight: 600;
+}
+
+.nav-link i {
+    margin-right: 6px;
+}
+
+/* --- 主內容區 (Main Content) --- */
+.main-content {
+    padding: 40px 0;
+    min-height: calc(100vh - var(--nav-height));
+}
+
+/* --- 卡片美化 (Cards) --- */
+.card {
+    background-color: var(--bg-card);
+    border: none;
+    border-radius: 12px; /* 更圓潤 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* 質感陰影 */
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px); /* 懸停時輕微上浮 */
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.25rem;
+    font-weight: 600;
+}
+
+/* --- 按鈕 (Buttons) --- */
+.btn-primary {
+    background-color: var(--accent-yellow);
+    border-color: var(--accent-yellow);
+    color: #202124;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #202124;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+/* --- 狀態標籤 (Badges) --- */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.status-draft { background-color: #f1f3f4; color: #5f6368; }
+.status-sent { background-color: #e8f0fe; color: #1967d2; }
+.status-paid { background-color: #e6f4ea; color: #137333; }
+.status-project { background-color: #fef7e0; color: #ea8600; }

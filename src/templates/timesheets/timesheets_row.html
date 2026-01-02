@@ -1,0 +1,49 @@
+<!-- 
+    單一工時 (Display Mode)
+    樣式：左側時數(凸顯) | 右側日期與描述
+-->
+<div class="card shadow-sm border-start-0 border-end-0 border-top-0 border-bottom mb-0" id="timesheet-{{ timesheet.id }}">
+    <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center bg-white rounded">
+        
+        <!-- 左側：工時資訊 -->
+        <div class="d-flex align-items-center gap-3">
+            <!-- 時數 Badge -->
+            <div class="bg-primary bg-opacity-10 text-primary border border-primary rounded text-center py-2 d-flex align-items-center justify-content-center" style="width: 55px; height: 50px;">
+                <div style="line-height: 1.1;">
+                    <span class="fs-5 fw-bold">{{ timesheet.hours_logged }}</span><br>
+                    <span style="font-size: 0.65rem;">hrs</span>
+                </div>
+            </div>
+            
+            <!-- 日期與描述 -->
+            <div>
+                <h6 class="mb-0 fw-bold text-dark">
+                    {{ timesheet.date_logged.strftime('%Y-%m-%d') if timesheet.date_logged else '-' }}
+                </h6>
+                <div class="small text-muted mt-1 text-truncate" style="max-width: 300px;">
+                    <i class="fas fa-comment-alt me-1 text-secondary opacity-50"></i>{{ timesheet.description or '無描述' }}
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：操作按鈕 -->
+        <div class="btn-group">
+            <!-- 編輯 -->
+            <button class="btn btn-sm btn-outline-secondary"
+                    hx-get="/ui/timesheets/{{ timesheet.id }}"
+                    hx-target="#timesheet-{{ timesheet.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-edit"></i>
+            </button>
+            
+            <!-- 刪除 -->
+            <button class="btn btn-sm btn-outline-danger"
+                    hx-delete="/ui/timesheets/{{ timesheet.id }}"
+                    hx-confirm="確認刪除此工時紀錄？"
+                    hx-target="#timesheet-{{ timesheet.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+</div>

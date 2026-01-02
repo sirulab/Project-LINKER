@@ -1,0 +1,67 @@
+<!-- 
+    工時編輯表單 (Inline Edit)
+-->
+<form hx-encoding="multipart/form-data" class="card shadow border-2 border-primary mb-0">
+    <!-- 
+        隱藏欄位：Employee ID 
+        工時是關聯到員工 (Employee)，而非公司 (Company)
+    -->
+    <input type="hidden" name="employee_id" value="{{ request.query_params.get('employee_id', '') or timesheet.employee_id }}">
+
+    <div class="card-body py-3 px-3">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+            
+            <!-- 輸入欄位區 -->
+            <div class="flex-grow-1">
+                <div class="mb-2 small text-primary fw-bold">
+                    <i class="fas fa-clock me-1"></i>{{ '編輯工時' if timesheet.id else '新增工時' }}
+                </div>
+
+                <div class="row g-2">
+                    <!-- 1. 日期 -->
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-0">日期</label>
+                        {% set log_date = timesheet.date_logged.strftime('%Y-%m-%d') if timesheet.date_logged else '' %}
+                        <input type="date" name="date_logged" class="form-control form-control-sm fw-bold" 
+                               value="{{ log_date }}" required>
+                    </div>
+                    
+                    <!-- 2. 時數 -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-0">時數 (Hr)</label>
+                        <input type="number" step="0.5" name="hours_logged" class="form-control form-control-sm text-end fw-bold text-primary" 
+                               value="{{ timesheet.hours_logged or '' }}" required placeholder="0.0">
+                    </div>
+                    
+                    <!-- 3. 描述 -->
+                    <div class="col-md-7">
+                        <label class="form-label small text-muted mb-0">工作內容 / 描述</label>
+                        <input type="text" name="description" class="form-control form-control-sm" 
+                               value="{{ timesheet.description or '' }}" placeholder="例如：開發登入功能...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按鈕區 -->
+            <div class="d-flex flex-column gap-2 mt-4">
+                <!-- 儲存 -->
+                <button type="button" class="btn btn-sm btn-primary"
+                        {% if timesheet.id %} hx-put="/ui/timesheets/{{ timesheet.id }}" {% else %} hx-post="/ui/timesheets" {% endif %}
+                        hx-include="closest form" hx-target="closest form" hx-swap="outerHTML">
+                    <i class="fas fa-save"></i>
+                </button>
+                
+                <!-- 取消 -->
+                <button type="button" class="btn btn-sm btn-secondary"
+                        {% if timesheet.id %} 
+                            hx-get="/ui/timesheets/{{ timesheet.id }}?cancelled=true" 
+                            hx-target="closest form" hx-swap="outerHTML"
+                        {% else %} 
+                            onclick="this.closest('form').remove()" 
+                        {% endif %}>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,47 @@
+<!-- 
+    單一聯絡人 (顯示模式)
+-->
+<div class="card shadow-sm border-start-0 border-end-0 border-top-0 border-bottom contact-card mb-0" id="contact-{{ contact_person.id }}">
+    <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center bg-white rounded">
+        
+        <!-- 左側：資訊 -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-light rounded-circle p-2 text-center" style="width: 40px; height: 40px;">
+                <i class="fas fa-user text-secondary"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold text-dark">
+                    {{ contact_person.name }} 
+                    {% if contact_person.role %}
+                    <span class="text-muted small fw-normal ms-2">({{ contact_person.role }})</span>
+                    {% endif %}
+                </h6>
+                <div class="small text-muted mt-1">
+                    {% if contact_person.phone %}
+                        <span class="me-3"><i class="fas fa-phone-alt me-1"></i>{{ contact_person.phone }}</span>
+                    {% endif %}
+                    {% if contact_person.email %}
+                        <span><i class="fas fa-envelope me-1"></i>{{ contact_person.email }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：操作 -->
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary"
+                    hx-get="/ui/contact_persons/{{ contact_person.id }}"
+                    hx-target="#contact-{{ contact_person.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger"
+                    hx-delete="/ui/contact_persons/{{ contact_person.id }}"
+                    hx-confirm="確認刪除此聯絡人？"
+                    hx-target="#contact-{{ contact_person.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>

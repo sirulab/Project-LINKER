@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}工時管理 - T-Leader{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 overflow-hidden bg-light bg-opacity-10">
+    <div class="row h-100 gx-3 px-3">
+        
+        <!-- [左側] 員工列表 -->
+        <div class="col-md-3 h-100 d-flex flex-column py-3">
+            <div class="bg-white border rounded shadow-sm d-flex flex-column h-100 overflow-hidden">
+                <div class="p-3 bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 fw-bold text-dark">
+                            <i class="fas fa-users-cog text-primary me-2"></i>員工列表
+                        </h5>
+                        <button class="btn btn-sm btn-primary shadow-sm" 
+                                hx-get="/ui/employees/new-row" 
+                                hx-target="#employee-sidebar-list" 
+                                hx-swap="afterbegin">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="employee-sidebar-list" class="flex-grow-1 overflow-auto p-2 d-flex flex-column gap-2 bg-light">
+                    {% for employee in employees %}
+                        {% include "employees/employees_row.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- [右側] 詳情工作區 -->
+        <div class="col-md-9 h-100 py-3 position-relative">
+            <div class="htmx-indicator position-absolute top-50 start-50 translate-middle" style="z-index: 1050;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div id="main-workspace" class="h-100 overflow-auto p-4 bg-white border rounded shadow-sm">
+                
+                <!-- 狀態還原 (Server Side Render) -->
+                {% if selected_item %}
+                    {% with employee = selected_item %}
+                        {% include "employees/employees_edit.html" %}
+                    {% endwith %}
+                {% else %}
+                    <!-- 空狀態 -->
+                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted animate__animated animate__fadeIn">
+                        <div class="bg-light rounded-circle p-5 mb-4 border border-dashed">
+                            <i class="fas fa-id-badge fa-4x text-secondary opacity-25"></i>
+                        </div>
+                        <h4>請選擇左側員工</h4>
+                        <p class="text-secondary">查看基本資料與管理工時紀錄</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 自動還原狀態腳本 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // [關鍵修正] 檢查 URL 是否有 employee_id 參數
+        const urlParams = new URLSearchParams(window.location.search);
+        const employeeId = urlParams.get('employee_id');
+        
+        // 如果有，且右側是空的，則自動觸發載入
+        if (employeeId && !document.querySelector('#main-workspace .card')) {
+            htmx.ajax('GET', '/ui/employees/' + employeeId, {
+                target: '#main-workspace',
+                swap: 'innerHTML'
+            });
+        }
+    });
+</script>
+{% endblock %}

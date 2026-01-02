@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}專案管理 - T-Leader{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 overflow-hidden bg-light bg-opacity-10">
+    <!-- Layout 設定：gx-3 px-3 -->
+    <div class="row h-100 gx-3 px-3">
+        
+        <!-- [左側欄位] 專案列表 (1/4) -->
+        <div class="col-md-3 h-100 d-flex flex-column py-3">
+            <div class="bg-white border rounded shadow-sm d-flex flex-column h-100 overflow-hidden">
+                <!-- 列表標頭 -->
+                <div class="p-3 bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 fw-bold text-dark">
+                            <i class="fas fa-list-ul text-primary me-2"></i>專案列表
+                        </h5>
+                        <!-- 新增專案 -->
+                        <button class="btn btn-sm btn-primary shadow-sm" 
+                                hx-get="/ui/projects/new-row" 
+                                hx-target="#project-sidebar-list" 
+                                hx-swap="afterbegin">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 列表內容區 -->
+                <div id="project-sidebar-list" class="flex-grow-1 overflow-auto p-2 d-flex flex-column gap-2 bg-light">
+                    {% for project in projects %}
+                        {% include "projects/projects_row.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- [右側欄位] 詳情與報價單工作區 (3/4) -->
+        <div class="col-md-9 h-100 py-3 position-relative">
+            <!-- Loading 動畫 -->
+            <div class="htmx-indicator position-absolute top-50 start-50 translate-middle" style="z-index: 1050;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <!-- 詳細內容容器 -->
+            <div id="main-workspace" class="h-100 overflow-auto p-4 bg-white border rounded shadow-sm">
+                <!-- 預設空狀態 -->
+                <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted animate__animated animate__fadeIn">
+                    <div class="bg-light rounded-circle p-5 mb-4 border border-dashed">
+                        <i class="fas fa-project-diagram fa-4x text-secondary opacity-25"></i>
+                    </div>
+                    <h4>請選擇左側專案</h4>
+                    <p class="text-secondary">點擊列表項目以管理專案詳情與報價單</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

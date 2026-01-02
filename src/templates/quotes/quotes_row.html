@@ -1,0 +1,63 @@
+<!-- 
+    單一報價單 (顯示模式)
+    包含：報價單摘要 + 展開後的細項表格 (引用 quoteitems)
+-->
+<div class="card shadow-sm border-start-0 border-end-0 border-top-0 border-bottom quote-card mb-3" id="quote-{{ quote.id }}">
+    <!-- 報價單 Header -->
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom-0">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-light rounded p-2 text-center" style="min-width: 40px;">
+                <i class="fas fa-file-alt text-secondary"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold text-dark">{{ quote.quote_number or '草稿' }}</h6>
+                <div class="small text-muted">
+                    <span class="badge bg-light text-dark border me-1">{{ quote.status }}</span>
+                    <span>效期: {{ quote.valid_until.strftime('%Y-%m-%d') if quote.valid_until else '-' }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <span class="fw-bold text-dark fs-5">${{ "{:,.2f}".format(quote.total_amount or 0) }}</span>
+            
+            <!-- 操作按鈕 -->
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary"
+                        hx-get="/ui/quotes/{{ quote.id }}"
+                        hx-target="#quote-{{ quote.id }}"
+                        hx-swap="outerHTML">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger"
+                        hx-delete="/ui/quotes/{{ quote.id }}"
+                        hx-confirm="確認刪除？"
+                        hx-target="#quote-{{ quote.id }}"
+                        hx-swap="outerHTML">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 細項內容 (Quote Items) -->
+    <div class="card-body bg-white pt-0 pb-3 ps-5 pe-3">
+        <details class="w-100">
+            <summary class="btn btn-sm btn-link text-decoration-none text-muted ps-0 user-select-none">
+                <i class="fas fa-chevron-right me-1 rotated-icon"></i> 
+                細項清單 ({{ quote.items|length }})
+            </summary>
+            
+            <!-- 引用 quoteitems 資料夾中的列表容器 -->
+            {% include "quoteitems/quoteitems.html" %}
+
+        </details>
+    </div>
+</div>
+
+<style>
+    details[open] summary .rotated-icon { transform: rotate(90deg); transition: transform 0.2s; }
+    details summary .rotated-icon { transition: transform 0.2s; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+</style>

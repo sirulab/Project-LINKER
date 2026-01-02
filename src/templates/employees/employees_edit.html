@@ -1,0 +1,142 @@
+<!-- 
+    員工資料 / 工時整合面板
+-->
+<div class="animate__animated animate__fadeIn">
+    
+    <!-- =========================== -->
+    <!-- 情境 A: 新增員工 (快速模式) -->
+    <!-- =========================== -->
+    {% if not employee.id %}
+    <form hx-encoding="multipart/form-data" class="card shadow-sm border-0 mb-3"
+          id="new-employee-form">
+        <div class="card-body py-4 px-4">
+            <h5 class="card-title fw-bold text-primary mb-3"><i class="fas fa-user-plus me-2"></i>新增員工</h5>
+            
+            <div class="d-flex flex-column gap-3">
+                <!-- 姓名 -->
+                <div>
+                    <input type="text" name="name" class="form-control fw-bold" 
+                           placeholder="請輸入員工姓名..." required autofocus>
+                </div>
+                
+                <!-- Email (非必填) -->
+                <div>
+                    <!-- [修正] 移除 required -->
+                    <input type="email" name="email" class="form-control" 
+                           placeholder="電子郵件">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-2">
+                    <button type="button" class="btn btn-success px-4"
+                            hx-post="/ui/employees" 
+                            hx-include="closest form"
+                            hx-target="#employee-sidebar-list" 
+                            hx-swap="afterbegin"
+                            hx-on::after-request="if(event.detail.successful) this.closest('form').remove()">
+                        <i class="fas fa-check me-1"></i> 建立
+                    </button>
+                    
+                    <button type="button" class="btn btn-light border" onclick="this.closest('.animate__animated').remove()">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- =========================== -->
+    <!-- 情境 B: 編輯/詳情模式 (完整) -->
+    <!-- =========================== -->
+    {% else %}
+    
+    <!-- 1. 員工資料卡片 -->
+    <form hx-encoding="multipart/form-data" class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-id-card text-primary me-2"></i>員工資料</h5>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-primary"
+                        hx-put="/ui/employees/{{ employee.id }}"
+                        hx-include="closest form"
+                        hx-target="#employee-{{ employee.id }}" 
+                        hx-swap="outerHTML"> 
+                    <i class="fas fa-save me-1"></i> 儲存變更
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body bg-light bg-opacity-25 p-4">
+            <div class="row g-3">
+                <!-- 第一行 -->
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">姓名</label>
+                    <input type="text" name="name" class="form-control fw-bold" 
+                           value="{{ employee.name or '' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">Email</label>
+                    <!-- [修正] 移除 required -->
+                    <input type="email" name="email" class="form-control" 
+                           value="{{ employee.email or '' }}">
+                </div>
+
+                <!-- 第二行 -->
+                <div class="col-md-4">
+                    <label class="form-label small text-muted fw-bold">職稱 (Role)</label>
+                    <input type="text" name="role" class="form-control" 
+                           value="{{ employee.role or 'staff' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted fw-bold">時薪 (Hourly Rate)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">$</span>
+                        <input type="number" step="0.01" name="hourly_rate" class="form-control text-end" 
+                               value="{{ employee.hourly_rate or 0 }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted fw-bold">狀態</label>
+                    <select name="is_active" class="form-select">
+                        <option value="true" {% if employee.is_active %}selected{% endif %}>在職 (Active)</option>
+                        <option value="false" {% if not employee.is_active %}selected{% endif %}>離職 (Inactive)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 2. 工時管理卡片 (Timesheets) -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark">
+                <i class="fas fa-clock text-success me-2"></i>工時紀錄
+            </h5>
+            <!-- 新增工時按鈕 -->
+            <button class="btn btn-success btn-sm"
+                    hx-get="/ui/timesheets/new-row?employee_id={{ employee.id }}"
+                    hx-target="#timesheets-container"
+                    hx-swap="afterbegin">
+                <i class="fas fa-plus me-1"></i> 新增工時
+            </button>
+        </div>
+
+        <div class="card-body bg-light bg-opacity-25 p-0">
+            <!-- 工時列表容器 -->
+            <div id="timesheets-container" class="d-flex flex-column gap-3 p-4">
+                {% if employee.timesheets %}
+                    {% for timesheet in employee.timesheets %}
+                        {% include "timesheets/timesheets_row.html" %}
+                    {% endfor %}
+                {% else %}
+                    <!-- 空狀態留白 -->
+                    <div id="no-timesheets-placeholder"></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* 當容器內有 form (正在新增工時) 時隱藏空狀態 div */
+    #timesheets-container form ~ #no-timesheets-placeholder { display: none; }
+</style>

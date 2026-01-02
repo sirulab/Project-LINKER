@@ -1,0 +1,42 @@
+<!-- 
+    Quote Items 列表容器片段
+    通常透過 include 放入 quotes/quotes_row.html 中
+-->
+<div class="table-responsive mt-2 border rounded overflow-hidden">
+    <table class="table table-hover mb-0 small align-middle">
+        <thead class="table-light text-secondary">
+            <tr>
+                <th class="ps-3" style="width: 40%;">項目</th>
+                <th class="text-end" style="width: 15%;">單價</th>
+                <th class="text-end" style="width: 15%;">數量</th>
+                <th class="text-end pe-3" style="width: 15%;">小計</th>
+                <th class="text-end pe-2" style="width: 15%;">操作</th>
+            </tr>
+        </thead>
+        
+        <!-- Items Container -->
+        <tbody id="quote-items-body-{{ quote.id }}">
+            <!-- [修正] 變數名稱改為 quoteitem 以配合 unified_factory 回傳的預設名稱 -->
+            {% for quoteitem in quote.items %}
+                {% include "quoteitems/quoteitems_row.html" %}
+            {% else %}
+                <!-- 空狀態：不需要額外顯示文字，保持空白即可 -->
+            {% endfor %}
+        </tbody>
+
+        <!-- Footer Action -->
+        <tfoot class="border-top">
+            <tr>
+                <td colspan="5" class="p-2">
+                    <!-- [修正] hx-get 路徑改為 /ui/quoteitems -->
+                    <button class="btn btn-sm btn-light text-primary w-100 text-start ps-3 fw-bold"
+                            hx-get="/ui/quoteitems/new-row?quote_id={{ quote.id }}"
+                            hx-target="#quote-items-body-{{ quote.id }}"
+                            hx-swap="beforeend">
+                        <i class="fas fa-plus-circle me-1"></i> 新增項目
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -1,0 +1,58 @@
+<!-- 
+    單一細項 (Display Mode)
+    這是一個 table row (tr)
+-->
+<!-- [修正] 變數名稱統一使用 quoteitem -->
+<tr id="item-{{ quoteitem.id }}" class="align-middle">
+    <!-- 1. 品項名稱與描述 -->
+    <td class="ps-3">
+        <div class="fw-bold text-dark">{{ quoteitem.name }}</div>
+        {% if quoteitem.description %}
+        <div class="small text-muted">{{ quoteitem.description }}</div>
+        {% endif %}
+    </td>
+
+    <!-- 2. 單價 -->
+    <td class="text-end font-monospace text-secondary">
+        {{ "{:,.2f}".format(quoteitem.unit_price) }}
+    </td>
+
+    <!-- 3. 數量 -->
+    <td class="text-end font-monospace text-secondary">
+        {{ quoteitem.quantity }}
+    </td>
+
+    <!-- 4. 小計 (靜態顯示) -->
+    <td class="text-end pe-3 fw-bold text-dark">
+        {{ "{:,.2f}".format(quoteitem.unit_price * quoteitem.quantity) }}
+    </td>
+
+    <!-- 5. 操作按鈕 -->
+    <td class="text-end pe-2" style="width: 100px;">
+        <div class="btn-group opacity-50 hover-opacity-100">
+            <!-- [修正] 路徑改為 /ui/quoteitems，變數改為 quoteitem -->
+            <!-- 編輯：將此 tr 替換為編輯表單 -->
+            <button class="btn btn-sm btn-link text-primary p-1"
+                    hx-get="/ui/quoteitems/{{ quoteitem.id }}"
+                    hx-target="#item-{{ quoteitem.id }}"
+                    hx-swap="outerHTML"
+                    title="編輯項目">
+                <i class="fas fa-pen"></i>
+            </button>
+            
+            <!-- 刪除 -->
+            <button class="btn btn-sm btn-link text-danger p-1"
+                    hx-delete="/ui/quoteitems/{{ quoteitem.id }}"
+                    hx-confirm="確定刪除此細項？"
+                    hx-target="#item-{{ quoteitem.id }}"
+                    hx-swap="outerHTML"
+                    title="刪除項目">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </td>
+</tr>
+
+<style>
+    .hover-opacity-100:hover { opacity: 1 !important; }
+</style>

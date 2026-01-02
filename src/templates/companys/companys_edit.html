@@ -1,0 +1,136 @@
+<!-- 
+    公司 (客戶) 編輯/詳情整合面板
+    修正重點：
+    1. 將公司名稱輸入框還原為標準大小，與下方卡片一致。
+    2. 確保新增後表單消失並被新卡片取代。
+-->
+<div class="animate__animated animate__fadeIn">
+    
+    <!-- =========================== -->
+    <!-- 情境 A: 新增公司 (快速模式) -->
+    <!-- =========================== -->
+    {% if not company.id %}
+    <form hx-encoding="multipart/form-data" class="card shadow-sm border-0 mb-3">
+        <div class="card-body py-4 px-4">
+            <h5 class="card-title fw-bold text-primary mb-3"><i class="fas fa-plus-circle me-2"></i>新增客戶</h5>
+            
+            <div class="d-flex flex-column gap-3">
+                <!-- 
+                    [關鍵修正] 移除 fs-4 text-primary 與 height: 3.5rem
+                    還原為標準大小輸入框
+                -->
+                <div>
+                    <input type="text" name="name" class="form-control fw-bold" 
+                           placeholder="請輸入公司名稱..." required autofocus>
+                </div>
+
+                <!-- 按鈕區 -->
+                <div class="d-flex justify-content-end gap-2 mt-2">
+                    <!-- 修正：hx-post 到 /ui/companys，並替換自身 -->
+                    <button type="button" class="btn btn-success px-4"
+                            hx-post="/ui/companys" 
+                            hx-include="closest form"
+                            hx-target="closest form" 
+                            hx-swap="outerHTML">
+                        <i class="fas fa-check me-1"></i> 建立
+                    </button>
+                    <button type="button" class="btn btn-light border" onclick="this.closest('form').remove()">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- =========================== -->
+    <!-- 情境 B: 編輯/詳情模式 (完整) -->
+    <!-- =========================== -->
+    {% else %}
+    
+    <!-- 1. 公司詳情卡片 -->
+    <form hx-encoding="multipart/form-data" class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-building text-primary me-2"></i>公司詳情</h5>
+            <div class="d-flex gap-2">
+                <!-- 修正：hx-put 到 /ui/companys -->
+                <button type="button" class="btn btn-sm btn-outline-primary"
+                        hx-put="/ui/companys/{{ company.id }}"
+                        hx-include="closest form"
+                        hx-target="#company-{{ company.id }}" 
+                        hx-swap="outerHTML"> 
+                    <i class="fas fa-save me-1"></i> 儲存變更
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body bg-light bg-opacity-25 p-4">
+            <div class="row g-3">
+                <!-- 第一行 -->
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">公司名稱</label>
+                    <!-- [關鍵修正] 編輯模式也還原標準大小 -->
+                    <input type="text" name="name" class="form-control fw-bold" 
+                           value="{{ company.name or '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted fw-bold">統一編號</label>
+                    <input type="text" name="tax_id" class="form-control" 
+                           value="{{ company.tax_id or '' }}" placeholder="Tax ID">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted fw-bold">電話</label>
+                    <input type="text" name="phone" class="form-control" 
+                           value="{{ company.phone or '' }}" placeholder="電話號碼">
+                </div>
+
+                <!-- 第二行 -->
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">Email</label>
+                    <input type="email" name="email" class="form-control" 
+                           value="{{ company.email or '' }}" placeholder="email@example.com">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">地址</label>
+                    <input type="text" name="address" class="form-control" 
+                           value="{{ company.address or '' }}" placeholder="公司地址">
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 2. 聯絡人管理卡片 -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark">
+                <i class="fas fa-user-friends text-success me-2"></i>聯絡人管理
+            </h5>
+            <!-- 新增聯絡人按鈕 -->
+            <button class="btn btn-success btn-sm"
+                    hx-get="/ui/contact_persons/new-row?company_id={{ company.id }}"
+                    hx-target="#contacts-container"
+                    hx-swap="afterbegin">
+                <i class="fas fa-plus me-1"></i> 新增聯絡人
+            </button>
+        </div>
+
+        <div class="card-body bg-light bg-opacity-25 p-0">
+            <!-- 聯絡人列表 -->
+            <div id="contacts-container" class="d-flex flex-column gap-3 p-4">
+                {% if company.contacts %}
+                    {% for contact_person in company.contacts %}
+                        {% include "contact_persons/contact_persons_row.html" %}
+                    {% endfor %}
+                {% else %}
+                    <!-- 空狀態留白 -->
+                    <div id="no-contacts-placeholder"></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* 當容器內有 form (正在新增聯絡人) 時隱藏空狀態 div */
+    #contacts-container form ~ #no-contacts-placeholder { display: none; }
+</style>

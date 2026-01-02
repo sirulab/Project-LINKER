@@ -1,0 +1,55 @@
+<!-- 
+    員工列表單項
+    Layout: 左側職稱縮寫(小) | 右側姓名(大)
+-->
+<div class="card border-0 shadow-sm employee-sidebar-item cursor-pointer" id="employee-{{ employee.id }}">
+    <div class="card-body p-3">
+        <!-- 上方：Flex Row -->
+        <div class="d-flex align-items-center">
+            <!-- 左欄(小)：職稱 Badge (取前兩個字母) -->
+            <div class="flex-shrink-0 me-3">
+                <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success px-2">
+                    {{ employee.role[:2].upper() if employee.role else 'EM' }}
+                </span>
+            </div>
+
+            <!-- 右欄(大)：姓名 -->
+            <div class="flex-grow-1" style="min-width: 0;">
+                <!-- 
+                    [關鍵] 點擊觸發：
+                    1. hx-get: 請求員工詳情 (/ui/employees/...)
+                    2. hx-push-url: 更新瀏覽器網址為 ?employee_id=...
+                -->
+                <a href="#" 
+                   class="text-decoration-none text-dark fw-bold stretched-link text-truncate d-block"
+                   hx-get="/ui/employees/{{ employee.id }}"
+                   hx-target="#main-workspace"
+                   hx-swap="innerHTML"
+                   hx-push-url="?employee_id={{ employee.id }}">
+                   {{ employee.name }}
+                </a>
+            </div>
+        </div>
+        
+        <!-- 下方：Email 與 操作 -->
+        <div class="d-flex justify-content-between align-items-end mt-2">
+            <small class="text-muted text-truncate" style="font-size: 0.8rem; max-width: 70%;">
+                <i class="far fa-envelope me-1"></i>{{ employee.email }}
+            </small>
+            
+            <!-- 刪除按鈕 -->
+            <button class="btn btn-sm btn-link text-danger p-0 position-relative z-2"
+                    hx-delete="/ui/employees/{{ employee.id }}"
+                    hx-confirm="確定要刪除此員工嗎？相關工時紀錄也會被刪除。"
+                    hx-target="#employee-{{ employee.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .employee-sidebar-item { border-left: 4px solid transparent; transition: all 0.2s; }
+    .employee-sidebar-item:hover { background-color: #f8f9fa; border-left-color: var(--bs-primary); }
+</style>

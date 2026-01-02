@@ -1,0 +1,39 @@
+name: mvp-crm CI Pipeline
+
+# 觸發時機：當 Push 到 main 分支，或發起 Pull Request 時
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Linux 機器
+
+    steps:
+    # 1. 下載你的程式碼
+    - uses: actions/checkout@v3
+
+    # 2. 安裝 Python
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    # 3. 安裝依賴套件
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest httpx  # 確保測試工具有安裝
+
+    # 4. 執行測試 (CI 的核心)
+    - name: Run Tests
+      run: |
+        pytest
+    
+    # 5. 測試通過後，試著打包 Docker Image (驗證 Dockerfile 沒寫錯)
+    - name: Build Docker Image
+      run: |
+        docker build -t mvp-crm .

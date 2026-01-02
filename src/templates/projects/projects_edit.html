@@ -1,0 +1,122 @@
+<!-- 
+    專案編輯/詳情整合面板
+    修正重點：標準字體大小 (無 fs-4)，確保框框消失邏輯。
+-->
+<div class="animate__animated animate__fadeIn">
+    
+    <!-- =========================== -->
+    <!-- 情境 A: 新增專案 (快速模式) -->
+    <!-- =========================== -->
+    {% if not project.id %}
+    <form hx-encoding="multipart/form-data" class="card shadow-sm border-0 mb-3">
+        <div class="card-body py-4 px-4">
+            <h5 class="card-title fw-bold text-primary mb-3"><i class="fas fa-plus-circle me-2"></i>新增專案</h5>
+            
+            <div class="d-flex flex-column gap-3">
+                <!-- 標準大小輸入框 -->
+                <div>
+                    <input type="text" name="name" class="form-control fw-bold" 
+                           placeholder="請輸入專案名稱..." required autofocus>
+                </div>
+
+                <!-- 按鈕區 -->
+                <div class="d-flex justify-content-end gap-2 mt-2">
+                    <button type="button" class="btn btn-success px-4"
+                            hx-post="/ui/projects" 
+                            hx-include="closest form"
+                            hx-target="closest form" 
+                            hx-swap="outerHTML">
+                        <i class="fas fa-check me-1"></i> 建立
+                    </button>
+                    <button type="button" class="btn btn-light border" onclick="this.closest('form').remove()">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- =========================== -->
+    <!-- 情境 B: 編輯/詳情模式 (完整) -->
+    <!-- =========================== -->
+    {% else %}
+    
+    <!-- 1. 專案詳情卡片 -->
+    <form hx-encoding="multipart/form-data" class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-cube text-primary me-2"></i>專案詳情</h5>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-primary"
+                        hx-put="/ui/projects/{{ project.id }}"
+                        hx-include="closest form"
+                        hx-target="#project-{{ project.id }}" 
+                        hx-swap="outerHTML"> 
+                    <i class="fas fa-save me-1"></i> 儲存變更
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body bg-light bg-opacity-25 p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">專案名稱</label>
+                    <input type="text" name="name" class="form-control fw-bold" 
+                           value="{{ project.name or '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted fw-bold">狀態</label>
+                    <select name="status" class="form-select">
+                        <option value="active" {% if project.status == 'active' %}selected{% endif %}>進行中</option>
+                        <option value="closed" {% if project.status == 'closed' %}selected{% endif %}>已結案</option>
+                        <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>封存</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted fw-bold">開始日期</label>
+                    {% set date_val = project.start_date.strftime('%Y-%m-%d') if project.start_date else '' %}
+                    <input type="date" name="start_date" class="form-control" value="{{ date_val }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">公司 ID</label>
+                    <input type="text" name="company_id" class="form-control" value="{{ project.company_id or '' }}" placeholder="請輸入 Company UUID">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-muted fw-bold">描述</label>
+                    <input type="text" name="description" class="form-control" value="{{ project.description or '' }}">
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 2. 報價單管理卡片 -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark">
+                <i class="fas fa-file-invoice-dollar text-success me-2"></i>報價單管理
+            </h5>
+            <button class="btn btn-success btn-sm"
+                    hx-get="/ui/quotes/new-row?project_id={{ project.id }}"
+                    hx-target="#quotes-container"
+                    hx-swap="afterbegin">
+                <i class="fas fa-plus me-1"></i> 新增報價單
+            </button>
+        </div>
+
+        <div class="card-body bg-light bg-opacity-25 p-0">
+            <div id="quotes-container" class="d-flex flex-column gap-3 p-4">
+                {% if project.quotes %}
+                    {% for quote in project.quotes %}
+                        {% include "quotes/quotes_row.html" %}
+                    {% endfor %}
+                {% else %}
+                    <div id="no-quotes-placeholder"></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    #quotes-container form ~ #no-quotes-placeholder { display: none; }
+</style>

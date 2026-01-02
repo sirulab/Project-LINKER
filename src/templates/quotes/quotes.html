@@ -1,0 +1,10 @@
+<!-- 
+    Quotes 列表容器
+    雖然主要功能已整合至 projects_edit.html，
+    但保留此檔案以防其他地方獨立引用或作為後備。
+-->
+<div id="quotes-wrapper" class="d-flex flex-column gap-3">
+    {% for quote in quotes %}
+        {% include "quotes/quotes_row.html" %}
+    {% endfor %}
+</div>

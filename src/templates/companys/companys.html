@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}客戶管理 - T-Leader{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 overflow-hidden bg-light bg-opacity-10">
+    <!-- Layout 設定：gx-3 px-3 (與專案管理一致) -->
+    <div class="row h-100 gx-3 px-3">
+        
+        <!-- [左側欄位] 客戶列表 (1/4) -->
+        <div class="col-md-3 h-100 d-flex flex-column py-3">
+            <div class="bg-white border rounded shadow-sm d-flex flex-column h-100 overflow-hidden">
+                <!-- 列表標頭 -->
+                <div class="p-3 bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 fw-bold text-dark">
+                            <i class="fas fa-building text-primary me-2"></i>客戶列表
+                        </h5>
+                        <!-- 新增客戶 -->
+                        <!-- 點擊後在列表頂部插入新增表單 -->
+                        <button class="btn btn-sm btn-primary shadow-sm" 
+                                hx-get="/ui/companys/new-row" 
+                                hx-target="#company-sidebar-list" 
+                                hx-swap="afterbegin">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 列表內容區 -->
+                <div id="company-sidebar-list" class="flex-grow-1 overflow-auto p-2 d-flex flex-column gap-2 bg-light">
+                    {% for company in companys %}
+                        {% include "companys/companys_row.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- [右側欄位] 公司詳情與聯絡人工作區 (3/4) -->
+        <div class="col-md-9 h-100 py-3 position-relative">
+            <!-- Loading 動畫 -->
+            <div class="htmx-indicator position-absolute top-50 start-50 translate-middle" style="z-index: 1050;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <!-- 詳細內容容器 -->
+            <div id="main-workspace" class="h-100 overflow-auto p-4 bg-white border rounded shadow-sm">
+                
+                <!-- [狀態還原] 處理 F5 重新整理後顯示選中項目 -->
+                {% if selected_item %}
+                    {% with company = selected_item %}
+                        {% include "companys/companys_edit.html" %}
+                    {% endwith %}
+                {% else %}
+                    <!-- 預設空狀態 -->
+                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted animate__animated animate__fadeIn">
+                        <div class="bg-light rounded-circle p-5 mb-4 border border-dashed">
+                            <i class="fas fa-building fa-4x text-secondary opacity-25"></i>
+                        </div>
+                        <h4>請選擇左側客戶</h4>
+                        <p class="text-secondary">點擊列表項目以管理公司詳情與聯絡人</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 自動還原狀態腳本 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 檢查 URL 是否有 company_id 參數
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyId = urlParams.get('company_id');
+        
+        // 如果有，且右側是空的(沒有 selected_item)，則自動觸發載入
+        // 注意：如果後端已經透過 selected_item 渲染了，這段其實是備用
+        if (companyId && !document.querySelector('#main-workspace .card')) {
+            htmx.ajax('GET', '/ui/companys/' + companyId, {
+                target: '#main-workspace',
+                swap: 'innerHTML'
+            });
+        }
+    });
+</script>
+{% endblock %}

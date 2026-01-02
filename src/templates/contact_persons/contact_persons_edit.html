@@ -1,0 +1,65 @@
+<!-- 
+    聯絡人編輯表單 (Inline Edit)
+    使用 Card 樣式包覆，與 Row 視覺保持一致
+-->
+<form hx-encoding="multipart/form-data" class="card shadow border-2 border-primary mb-0">
+    <!-- 隱藏欄位：Company ID -->
+    <input type="hidden" name="company_id" value="{{ request.query_params.get('company_id', '') or contact_person.company_id }}">
+
+    <div class="card-body py-3 px-3">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+            
+            <!-- 輸入欄位區 -->
+            <div class="flex-grow-1">
+                <!-- 修正標題顯示 -->
+                <div class="mb-2 small text-primary fw-bold">
+                    <i class="fas fa-user-edit me-1"></i>{{ '編輯聯絡人' if contact_person.id else '新增聯絡人' }}
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-0">姓名</label>
+                        <input type="text" name="name" class="form-control form-control-sm fw-bold" 
+                               value="{{ contact_person.name or '' }}" required placeholder="姓名">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-0">職稱</label>
+                        <input type="text" name="role" class="form-control form-control-sm" 
+                               value="{{ contact_person.role or '' }}" placeholder="職稱">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-0">電話</label>
+                        <input type="text" name="phone" class="form-control form-control-sm" 
+                               value="{{ contact_person.phone or '' }}" placeholder="電話">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-0">Email</label>
+                        <input type="email" name="email" class="form-control form-control-sm" 
+                               value="{{ contact_person.email or '' }}" placeholder="Email">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按鈕區 -->
+            <div class="d-flex flex-column gap-2 mt-4">
+                <!-- 儲存：hx-swap="outerHTML" 替換回 Row -->
+                <button type="button" class="btn btn-sm btn-primary"
+                        {% if contact_person.id %} hx-put="/ui/contact_persons/{{ contact_person.id }}" {% else %} hx-post="/ui/contact_persons" {% endif %}
+                        hx-include="closest form" hx-target="closest form" hx-swap="outerHTML">
+                    <i class="fas fa-save"></i>
+                </button>
+                
+                <!-- 取消 -->
+                <button type="button" class="btn btn-sm btn-secondary"
+                        {% if contact_person.id %} 
+                            hx-get="/ui/contact_persons/{{ contact_person.id }}?cancelled=true" 
+                            hx-target="closest form" hx-swap="outerHTML"
+                        {% else %} 
+                            onclick="this.closest('form').remove()" 
+                        {% endif %}>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
