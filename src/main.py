@@ -10,7 +10,7 @@ from models import (
     Quote, 
     QuoteItem, 
     Receipt, 
-    EmployeeTimesheet,
+    Timesheet,
     Employee
 )
 
@@ -136,9 +136,9 @@ app.include_router(employee_web)
 # 8. timesheets
 timesheet_api, timesheet_web = create_full_stack_router(
     path_name="timesheets",
-    model=EmployeeTimesheet,
-    schema_base=EmployeeTimesheet,
-    schema_create=EmployeeTimesheet,
+    model=Timesheet,
+    schema_base=Timesheet,
+    schema_create=Timesheet,
     get_db_func=get_db,
     templates=templates
 )
