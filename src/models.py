@@ -33,7 +33,8 @@ class ContactPerson(SQLModel, table=True):
     name: str
     email: Optional[str] = None
     phone: Optional[str] = None
-    role: Optional[str] = None 
+    role: Optional[str] = None
+    birthday: Optional[str] = None 
     
     project_id: Optional[str] = Field(default=None, foreign_key="projects.id")
     company_id: Optional[str] = Field(default=None, foreign_key="companys.id")
