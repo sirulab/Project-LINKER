@@ -11,8 +11,8 @@ Project-LINKER 是一個輕量級的一站式工作管理系統。
 
 ### 技術棧 (Tech Stack)
 
-* **後端 / API**：Python 3.x
-* **資料庫 ORM**：SQLAlchemy (`database.py` & `models.py`)
+* **後端**：Python 3.13+, FastAPI
+* **資料庫 ORM**：SQLModel (`database.py` & `models.py`)
 * **前端渲染**：Jinja2 Templates (`src/templates/`) + Bootstrap 5 (`src/static/`)
 * **資料工廠**：Unified Factory (`unified_factory.py`)
 
@@ -22,25 +22,25 @@ Project-LINKER 是一個輕量級的一站式工作管理系統。
 
 1. `Company` (1) --- (N) `ContactPerson`
 2. `Company` (1) --- (N) `Quote`
-3. `Quote` (1) --- (N) `QuoteItem` (報價單明細)
-4. `Quote` (1) --- (1 或 N) `Project` (報價單成立後轉專案)
-5. `Project` (1) --- (N) `Timesheet` (專案的工時花費)
-6. `Employee` (1) --- (N) `Timesheet` (員工填寫的工時)
+3. `Quote` (1) --- (N) `QuoteItem`
+4. `Quote` (1) --- (1 或 N) `Project`
+5. `Project` (1) --- (N) `Timesheet`
+6. `Employee` (1) --- (N) `Timesheet`
 
 ### 資料夾結構
 
 ```text
 Project-LINKER/
-├── docs/                 # 系統架構圖與文件 (e.g., diagram-models.png)
+├── docs/                 # 文件 (資料表模型圖表)
 ├── requirements.txt      # Python 套件清單
-└── src/                  # 應用程式原始碼
+└── src/                  
     ├── main.py           # 系統進入點 (Entry point)
     ├── database.py       # 資料庫連線與設定
-    ├── models.py         # SQLAlchemy 資料表模型定義
-    ├── unified_factory.py# 種子資料/測試資料生成工廠
+    ├── models.py         # SQLModel 資料表模型
+    ├── unified_factory.py# 資料表生成工廠
     ├── static/           # 靜態資源 (CSS, JS, Bootstrap)
     └── templates/        # 網頁樣板
-        ├── base.html     # 全局佈局樣板
+        ├── base.html     # 全局樣板
         ├── companys/     # 客戶公司視圖
         ├── projects/     # 專案視圖
         ├── quotes/       # 報價單視圖
