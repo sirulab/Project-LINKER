@@ -68,14 +68,8 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. 初始化資料庫
+### 3. 啟動伺服器
 
 ```
-python src/unified_factory.py 
-```
-
-### 4. 啟動伺服器
-
-```
-python src/main.py
+uvicorn src.main:app --reload
 ```
