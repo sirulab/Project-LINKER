@@ -22,6 +22,38 @@ from auth import router as auth_router, RoleChecker, get_current_user
 # 建立資料表
 SQLModel.metadata.create_all(bind=engine)
 
+# =================================================================
+# 初始化測試資料 (Database Seeding) - 試用者
+# =================================================================
+def init_dummy_data():
+    db = SessionLocal()
+    try:
+        test_email = "admin@linker.com"
+        existing_user = db.query(User).filter(User.email == test_email).first()
+        
+        if not existing_user:
+            print("初次啟動，正在為試用者建立預設 Admin 帳號...")
+            
+            # 預設
+            hashed_pw = get_password_hash("admin123")
+            new_user = User(email=test_email, hashed_password=hashed_pw, role="admin")
+            db.add(new_user)
+            db.commit()
+            db.refresh(new_user)
+            
+            # 建立對應的 Employee 資料
+            new_employee = Employee(name="試用者專用帳號", user_id=new_user.id, role="admin")
+            db.add(new_employee)
+            db.commit()
+            print("完成，試用者建立預設 Admin 帳號")
+    finally:
+        db.close()
+
+# 每次啟動伺服器時，自動執行檢查
+init_dummy_data()
+
+# --------
+
 app = FastAPI()
 
 app.include_router(auth_router)

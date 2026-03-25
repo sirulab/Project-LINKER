@@ -2,7 +2,7 @@
 import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, Form, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, Form, status, get_password_hash
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -17,7 +17,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # Token 預設有效時間一天
 # 建立密碼加密器 (使用 bcrypt)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="templates")
 
 def get_password_hash(password: str) -> str:
     # 進行雜湊加密
