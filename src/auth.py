@@ -9,10 +9,15 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import User, Employee
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # 安全設定
-SECRET_KEY = "your-super-secret-key"  # TODO: 建議改向 .env 讀取隨機字串
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # Token 有效時間設為一天
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-for-dev-only")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
 
 # 建立密碼加密器 (使用 bcrypt)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
