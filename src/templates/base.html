@@ -78,9 +78,9 @@
                     <li class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
                         <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
                             <div class="bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center fw-bold me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
-                                A
+                                {{ current_user.email[0] | upper }}
                             </div>
-                            <span class="small">Admin</span>
+                            <span class="small">{{ current_user.email }} ({{ current_user.role }})</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>設定</a></li>

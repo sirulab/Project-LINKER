@@ -38,111 +38,139 @@ def get_db():
 
 # index.html
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
+async def root(
+    request: Request, 
+    current_user: User = Depends(get_current_user) # 【新增】讓首頁也能取得當前登入者
+):
     return templates.TemplateResponse("index.html", {
         "request": request,
         "active_page": "home",
         "project_count": "-", 
         "pending_quotes": "-",
-        "employee_count": "-"
+        "employee_count": "-",
+        "current_user": current_user # 【新增】傳給前端首頁
     })
 
 # =================================================================
-# 註冊API + Web (工廠模式)
+# 註冊API + Web (工廠模式 - 加上 RBAC 權限控制)
 # =================================================================
 
-# 1. companys 
+# 1. companys (公司管理：大家都能新增/修改，僅 admin 可刪除)
 company_api, company_web = create_full_stack_router(
     path_name="companys",
     model=Company,
     schema_base=Company,
     schema_create=Company,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"], 
+    update_roles=["admin", "staff"], 
+    delete_roles=["admin"]           
 )
 app.include_router(company_api)
 app.include_router(company_web)
 
-# 2. projects
+# 2. projects (專案管理)
 project_api, project_web = create_full_stack_router(
     path_name="projects",
     model=Project,
     schema_base=Project,
     schema_create=Project,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"],
+    update_roles=["admin", "staff"],
+    delete_roles=["admin"]
 )
 app.include_router(project_api)
 app.include_router(project_web)
 
-# 3. contact_persons
+# 3. contact_persons (聯絡人管理)
 contact_api, contact_web = create_full_stack_router(
     path_name="contact_persons",
     model=ContactPerson,
     schema_base=ContactPerson,
     schema_create=ContactPerson,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"],
+    update_roles=["admin", "staff"],
+    delete_roles=["admin"]
 )
 app.include_router(contact_api)
 app.include_router(contact_web)
 
-# 4. quotes
+# 4. quotes (報價單)
 quote_api, quote_web = create_full_stack_router(
     path_name="quotes",
     model=Quote,
     schema_base=Quote,
     schema_create=Quote,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"],
+    update_roles=["admin", "staff"],
+    delete_roles=["admin"]
 )
 app.include_router(quote_api)
 app.include_router(quote_web)
 
-# 5. quoteitems
+# 5. quoteitems (報價單項目)
 quoteitem_api, quoteitem_web = create_full_stack_router(
     path_name="quoteitems",
     model=QuoteItem,
     schema_base=QuoteItem,
     schema_create=QuoteItem,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"],
+    update_roles=["admin", "staff"],
+    delete_roles=["admin"]
 )
 app.include_router(quoteitem_api)
 app.include_router(quoteitem_web)
 
-# 6. receipts
+# 6. receipts (收據)
 receipt_api, receipt_web = create_full_stack_router(
     path_name="receipts",
     model=Receipt,
     schema_base=Receipt,
     schema_create=Receipt,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"],
+    update_roles=["admin", "staff"],
+    delete_roles=["admin"]
 )
 app.include_router(receipt_api)
 app.include_router(receipt_web)
 
-# 7. employees
+# 7. employees (員工管理：高度敏感，全部僅限 admin)
 employee_api, employee_web = create_full_stack_router(
     path_name="employees",
     model=Employee,
     schema_base=Employee,
     schema_create=Employee,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin"], # 【注意】這裡只有 admin
+    update_roles=["admin"], # 【注意】這裡只有 admin
+    delete_roles=["admin"]  # 【注意】這裡只有 admin
 )
 app.include_router(employee_api)
 app.include_router(employee_web)
 
-# 8. timesheets
+# 8. timesheets (工時表：員工可以填寫/修改自己的工時，admin 可以刪除)
 timesheet_api, timesheet_web = create_full_stack_router(
     path_name="timesheets",
     model=Timesheet,
     schema_base=Timesheet,
     schema_create=Timesheet,
     get_db_func=get_db,
-    templates=templates
+    templates=templates,
+    create_roles=["admin", "staff"],
+    update_roles=["admin", "staff"],
+    delete_roles=["admin"]
 )
 app.include_router(timesheet_api)
 app.include_router(timesheet_web)
