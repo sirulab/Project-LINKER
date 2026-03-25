@@ -16,11 +16,14 @@ from models import (
 
 from database import SessionLocal, engine
 from unified_factory import create_full_stack_router
+from auth import router as auth_router
 
 # 建立資料表
 SQLModel.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.include_router(auth_router)
 
 templates = Jinja2Templates(directory="templates")
 

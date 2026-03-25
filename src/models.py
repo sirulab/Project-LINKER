@@ -3,11 +3,23 @@ from sqlmodel import Field, Relationship, SQLModel
 from datetime import datetime
 import uuid
 
-# 用於生成 UUID 字串
 def generate_uuid():
     return str(uuid.uuid4())
 
-# 手畫關聯圖、或eraser.io
+# 手畫關聯圖
+# 0. users
+class User(SQLModel, table=True):
+    __tablename__ = "users"
+
+    id: str = Field(default_factory=generate_uuid, primary_key=True)
+    email: str = Field(unique=True, index=True)
+    hashed_password: str
+    role: str = Field(default="staff") # (admin, staff)
+    is_active: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    employee: Optional["Employee"] = Relationship(back_populates="user")
+
 # 1. companys
 
 class Company(SQLModel, table=True):
@@ -125,6 +137,9 @@ class Employee(SQLModel, table=True):
     hourly_rate: float = Field(default=0.0)
     is_active: bool = Field(default=True)
     
+    user_id: Optional[str] = Field(default=None, foreign_key="users.id", unique=True)
+
+    user: Optional["User"] = Relationship(back_populates="employee")
     timesheets: List["Timesheet"] = Relationship(back_populates="employee")
 
 
