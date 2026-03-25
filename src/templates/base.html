@@ -14,14 +14,28 @@
     <!-- HTMX Core -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
+
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8f9fa; padding-top: 70px; }
         .navbar-custom { background-color: #212529; }
         .nav-link.active { color: #ffc107 !important; font-weight: 700; }
         .main-content { min-height: 80vh; }
+
+        /* 讓錯誤訊息固定在畫面上方，不破壞原本排版 */
+        #global-error-container {
+            position: fixed;
+            top: 80px; /* 避開 navbar */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            width: 80%;
+            max-width: 600px;
+        }
     </style>
 </head>
-<body>
+<body hx-ext="response-targets" hx-target-403="#global-error-container" hx-target-400="#global-error-container">
 
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top shadow-sm">
@@ -78,6 +92,9 @@
             </div>
         </div>
     </nav>
+
+    <!-- 放置錯誤訊息的空盒子 -->
+    <div id="global-error-container"></div>
 
     <!-- Main Content -->
     <main class="main-content">

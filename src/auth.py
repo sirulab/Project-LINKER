@@ -141,3 +141,18 @@ def login_page(request: Request):
 def register_page(request: Request):
     # 顯示註冊頁面
     return templates.TemplateResponse("register.html", {"request": request})
+
+# RBAC 角色權限檢查器
+class RoleChecker:
+    def __init__(self, allowed_roles: list):
+        # 允許
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, user: User = Depends(get_current_user)):
+        # user 參數會自動呼叫 get_current_user -> 取得當前使用者
+        if user.role not in self.allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="您的權限不足，無法執行此操作"
+            )
+        return user
