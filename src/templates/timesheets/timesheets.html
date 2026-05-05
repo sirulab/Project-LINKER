@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}所有工時表 - LINKER{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 fw-bold text-dark">
+            <i class="fas fa-clock text-success me-2"></i>全體員工工時紀錄
+        </h4>
+        <!-- 新增工時按鈕：直接呼叫後端取得新增表單 -->
+        <button class="btn btn-success shadow-sm"
+                hx-get="/ui/timesheets/new-row"
+                hx-target="#all-timesheets-container"
+                hx-swap="afterbegin">
+            <i class="fas fa-plus me-1"></i> 新增工時
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body bg-light bg-opacity-25 p-4 rounded">
+            <!-- 工時列表容器 -->
+            <div id="all-timesheets-container" class="d-flex flex-column gap-3">
+                <!-- 這裡的 timesheets 變數是後端 get_all_endpoint 自動傳過來的 -->
+                {% for timesheet in timesheets %}
+                    <!-- 載入你已經寫好的單一工時元件 -->
+                    {% include "timesheets/timesheets_row.html" %}
+                {% else %}
+                    <!-- 當沒有任何資料時顯示的防呆畫面 -->
+                    <div class="text-center text-muted py-5" id="no-timesheets-placeholder">
+                        <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
+                        <h5>目前尚無任何工時紀錄</h5>
+                        <p class="small text-secondary">點擊右上角按鈕即可新增第一筆資料。</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 當點擊新增按鈕產生 form 表單時，自動隱藏「尚無資料」的提示字樣 */
+    #all-timesheets-container form ~ #no-timesheets-placeholder { display: none; }
+</style>
+{% endblock %}
