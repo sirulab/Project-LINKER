@@ -202,3 +202,32 @@ async def custom_http_exception_handler(request: Request, exc: HTTPException):
         return RedirectResponse(url="/", status_code=303)
 
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+# =================================================================
+# 工時表路由
+# =================================================================
+@app.get("/ui/my-timesheet")
+async def my_timesheet_redirect(
+    request: Request, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    """
+    自動辨識登入的身份並導向對應的工時表頁面。
+    - Admin: 導向 /ui/employees 總覽頁面
+    - Staff: 導向專屬的 /ui/employees/?employee_id=... 頁面
+    """
+    # 1. 管理員，直接導向員工列表: 點選任何人查看
+    if current_user.role == "admin":
+        return RedirectResponse(url="/ui/employees", status_code=status.HTTP_303_SEE_OTHER)
+    
+    # 2. 員工，根據登入的 user_id 尋找對應的 Employee
+    employee = db.query(Employee).filter(Employee.user_id == current_user.id).first()
+    
+    # 沒有對應的員工資料: 錯誤提示
+    if not employee:
+        raise HTTPException(status_code=404, detail="找不到您的員工資料，請聯絡管理員設定。")
+        
+    # 3. 員工導向自己的詳情頁面
+    target_url = f"/ui/employees/?employee_id={employee.id}"
+    return RedirectResponse(url=target_url, status_code=status.HTTP_303_SEE_OTHER)
