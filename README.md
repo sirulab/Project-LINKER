@@ -2,6 +2,9 @@ Project-LINKER 是一個輕量級的一站式工作管理系統。
 借鑑了荷比盧中小企業市佔第一的 Teamleader 的核心概念，此專案旨在提供專業服務類公司一個無縫的業務轉換流程：
 從建立客戶 (Company)、開立報價單 (Quote)、轉換為專案 (Project)，到最終追蹤員工的實際工時 (Timesheet)。
 
+### 部屬網址 (Live Demo)
+目前系統已部屬。打開瀏覽器前往：https://linker.sirulab.com
+
 ### 核心功能 (Core Features)
 
 * **CRM 基礎管理**：維護客戶公司 (`Company`) 與聯絡人 (`Contact Person`) 資訊。
