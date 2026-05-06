@@ -8,7 +8,7 @@
         <h4 class="mb-0 fw-bold text-dark">
             <i class="fas fa-clock text-success me-2"></i>全體員工工時紀錄
         </h4>
-        <!-- 新增工時按鈕：直接呼叫後端取得新增表單 -->
+        <!-- 新增工時按鈕：呼叫後端取得新增表單 -->
         <button class="btn btn-success shadow-sm"
                 hx-get="/ui/timesheets/new-row"
                 hx-target="#all-timesheets-container"
@@ -21,12 +21,12 @@
         <div class="card-body bg-light bg-opacity-25 p-4 rounded">
             <!-- 工時列表容器 -->
             <div id="all-timesheets-container" class="d-flex flex-column gap-3">
-                <!-- 這裡的 timesheets 變數是後端 get_all_endpoint 自動傳過來的 -->
+                <!--  timesheets 變數是後端 get_all_endpoint 自動傳過來的 -->
                 {% for timesheet in timesheets %}
-                    <!-- 載入你已經寫好的單一工時元件 -->
+                    <!-- 載入單一工時元件 -->
                     {% include "timesheets/timesheets_row.html" %}
                 {% else %}
-                    <!-- 當沒有任何資料時顯示的防呆畫面 -->
+                    <!-- 當沒有任何資料 錯誤畫面 -->
                     <div class="text-center text-muted py-5" id="no-timesheets-placeholder">
                         <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
                         <h5>目前尚無任何工時紀錄</h5>

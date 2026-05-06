@@ -9,13 +9,13 @@ from auth import get_current_user, RoleChecker
 from models import User
 
 def create_full_stack_router(
-    path_name: str,        # 例如 "companys"
+    path_name: str,       # 例如 "companys"
     model: Any,           # SQLAlchemy Model
     schema_base: Any,     # Pydantic Schema (讀取用)
     schema_create: Any,   # Pydantic Schema (創建/更新用)
     get_db_func: Any,     # 資料庫連接 Dependency
     templates: Any,       # Jinja2Templates 實例
-    # 【新增】以下三個參數用來接收權限設定，預設為 None 代表不限制
+    # [新增]以下三個參數用來接收權限設定，預設為 None 代表不限制
     create_roles: Optional[List[str]] = None,
     update_roles: Optional[List[str]] = None,
     delete_roles: Optional[List[str]] = None
@@ -120,7 +120,7 @@ def create_full_stack_router(
             raise HTTPException(status_code=400, detail="Delete failed")
 
     # ==================================================================
-    # 2. Web Router (UI) - 【全部 GET 路由注入 current_user】
+    # 2. Web Router (UI) - 全部 GET 路由注入 current_user
     # ==================================================================
     web = APIRouter(prefix=f"/ui/{path_name}", tags=[f"{path_name.capitalize()} Web"])
 

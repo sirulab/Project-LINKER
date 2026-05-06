@@ -34,7 +34,7 @@ def init_dummy_data():
         existing_user = db.query(User).filter(User.email == test_email).first()
         
         if not existing_user:
-            print("🚀 初次啟動：正在建立試用管理員帳號...")
+            print("正在建立試用管理員帳號...")
             # 建立 User
             hashed_pw = get_password_hash("admin123")
             new_user = User(email=test_email, hashed_password=hashed_pw, role="admin")
@@ -46,7 +46,7 @@ def init_dummy_data():
             new_employee = Employee(name="試用管理員", user_id=new_user.id, role="admin")
             db.add(new_employee)
             db.commit()
-            print("✅ 完成：試用者帳號 admin@linker.com / admin123")
+            print("試用者帳號 admin@linker.com / admin123")
     finally:
         db.close()
 

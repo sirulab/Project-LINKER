@@ -24,27 +24,23 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 templates = Jinja2Templates(directory="templates")
 
-# --- 密碼與 Token 工具 ---
+# 密碼與 Token
 
 def get_password_hash(password: str) -> str:
-    """進行密碼雜湊加密"""
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """驗證明文密碼與雜湊值是否相符"""
     return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict) -> str:
-    """生成 JWT Access Token"""
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# --- 依賴項目 (Dependencies) ---
+# 依賴 (Dependencies)
 
 def get_db():
-    """資料庫 Session 依賴"""
     db = SessionLocal()
     try:
         yield db
@@ -52,7 +48,6 @@ def get_db():
         db.close()
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
-    """從 Cookie 取得 JWT 並驗證，回傳當前登入的 User 物件"""
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="尚未登入")
@@ -71,7 +66,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     
     return user
 
-# --- 認證路由 (Authentication Routes) ---
+# 認證路由 (Authentication Routes)
 
 router = APIRouter(tags=["Authentication"])
 
@@ -82,12 +77,11 @@ def register(
     name: str = Form(...), # 員工姓名
     db: Session = Depends(get_db)
 ):
-    """註冊新帳號並建立對應員工資料"""
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="此 Email 已經被註冊過了")
 
-    # 建立 User (預設角色為 staff)
+    # 建立 User (預設 staff)
     hashed_pw = get_password_hash(password)
     new_user = User(email=email, hashed_password=hashed_pw, role="staff")
     db.add(new_user)
@@ -107,7 +101,6 @@ def login(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    """使用者登入並發放 JWT Cookie"""
     user = db.query(User).filter(User.email == email).first()
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Email 或密碼錯誤")
@@ -126,20 +119,17 @@ def login(
 
 @router.post("/logout")
 def logout():
-    """清除 Cookie 登出系統"""
     response = RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("access_token")
     return response
 
-# --- 快速登入傳送門 (Tester Portal) ---
-
+# 快速登入 (Tester Portal)
 @router.get("/tester")
 def tester_login(db: Session = Depends(get_db)):
-    """專供面試官一鍵進入系統的傳送門"""
     test_email = "admin@linker.com"
     user = db.query(User).filter(User.email == test_email).first()
     
-    # 如果資料庫沒有測試帳號，自動建立一個 Admin 級別帳號
+    # 如果資料庫沒有測試帳號，自動建立一個 Admin 權限帳號
     if not user:
         hashed_pw = get_password_hash("admin123")
         user = User(email=test_email, hashed_password=hashed_pw, role="admin")
@@ -147,7 +137,6 @@ def tester_login(db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
         
-        # 同步建立對應的員工資料
         new_employee = Employee(name="試用管理者", user_id=user.id, role="admin")
         db.add(new_employee)
         db.commit()
@@ -164,7 +153,7 @@ def tester_login(db: Session = Depends(get_db)):
     )
     return response
 
-# --- 頁面渲染 (Page Rendering) ---
+# 頁面渲染 (Page Rendering)
 
 @router.get("/login")
 def login_page(request: Request):
@@ -174,10 +163,9 @@ def login_page(request: Request):
 def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# --- 權限檢查器 (RBAC Checker) ---
+# 權限檢查器 (RBAC Checker)
 
 class RoleChecker:
-    """角色權限檢查器"""
     def __init__(self, allowed_roles: list):
         self.allowed_roles = allowed_roles
 
