@@ -34,20 +34,30 @@ Project-LINKER 是一個輕量級的一站式工作管理系統。
 
 ```text
 Project-LINKER/
-├── docs/                 # 文件 (資料表模型圖表)
-├── requirements.txt      # Python 套件清單
-└── src/                  
-    ├── main.py           # 系統進入點 (Entry point)
-    ├── database.py       # 資料庫連線與設定
-    ├── models.py         # SQLModel 資料表模型
-    ├── unified_factory.py# 資料表生成工廠
-    ├── static/           # 靜態資源 (CSS, JS, Bootstrap)
-    └── templates/        # 網頁樣板
-        ├── base.html     # 全局樣板
-        ├── companys/     # 客戶公司視圖
-        ├── projects/     # 專案視圖
-        ├── quotes/       # 報價單視圖
-        └── timesheets/   # 工時表視圖
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                 
+│       └── cd.yml
+├── docs/                          # 專案文件 (關聯式資料)
+├── src/                           
+│   ├── static/
+│   ├── templates/
+│   ├── auth.py
+│   ├── database.py
+│   ├── main.py
+│   └── models.py
+├── tests/                         
+│   ├── conftest.py
+│   ├── unit/
+│   │   └── test_auth_logic.py
+│   └── integration/
+│       ├── test_auth_endpoints.py
+│       └── test_business_flow.py               
+├── .env                           
+├── .gitignore
+├── Dockerfile
+├── pytest.ini                     
+└── requirements.txt 
 ```
 
 ### 本地端開發設定
