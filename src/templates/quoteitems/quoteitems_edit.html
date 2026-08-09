@@ -52,7 +52,7 @@
                     {% if quoteitem.id %}
                         hx-put="/ui/quoteitems/{{ quoteitem.id }}" 
                     {% else %}
-                        hx-post="/ui/quoteitems" 
+                        hx-post="/ui/quoteitems/" 
                     {% endif %}
                     hx-include="closest tr"
                     hx-target="closest tr"
