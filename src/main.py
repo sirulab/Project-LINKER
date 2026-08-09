@@ -4,7 +4,6 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import SQLModel
 from sqlalchemy.orm import Session
 import jwt
-from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 
 # 核心模組引入
 from models import (
@@ -57,8 +56,6 @@ init_dummy_data()
 app = FastAPI(title="Project LINKER")
 app.include_router(auth_router)
 templates = Jinja2Templates(directory="templates")
-
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["*"])
 
 # 資料庫依賴
 def get_db():
