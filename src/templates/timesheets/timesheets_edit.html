@@ -46,7 +46,7 @@
             <div class="d-flex flex-column gap-2 mt-4">
                 <!-- 儲存 -->
                 <button type="button" class="btn btn-sm btn-primary"
-                        {% if timesheet.id %} hx-put="/ui/timesheets/{{ timesheet.id }}" {% else %} hx-post="/ui/timesheets" {% endif %}
+                        {% if timesheet.id %} hx-put="/ui/timesheets/{{ timesheet.id }}" {% else %} hx-post="/ui/timesheets/" {% endif %}
                         hx-include="closest form" hx-target="closest form" hx-swap="outerHTML">
                     <i class="fas fa-save"></i>
                 </button>
