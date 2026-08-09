@@ -1,10 +1,16 @@
 FROM python:3.11-slim
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+
 RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
+RUN pip install --no-cache-dir uv # 安裝 uv
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt # 使用 uv
+
 COPY src/ ./src/
 WORKDIR /app/src
 EXPOSE 8000
