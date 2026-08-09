@@ -13,5 +13,5 @@ RUN uv pip install --system --no-cache -r requirements.txt # 使用 uv 並且sys
 
 COPY src/ ./src/
 WORKDIR /app/src
-EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8001
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
