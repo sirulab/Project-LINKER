@@ -9,7 +9,7 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir uv # 安裝 uv
 COPY requirements.txt .
-RUN uv pip install --no-cache-dir -r requirements.txt # 使用 uv
+RUN uv pip install --system --no-cache -r requirements.txt # 使用 uv 並且system ( 預設安全機制是不允許污染全域系統)
 
 COPY src/ ./src/
 WORKDIR /app/src
